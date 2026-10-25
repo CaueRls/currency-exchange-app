@@ -1,0 +1,309 @@
+{
+  "info": {
+    "name": "Currency Exchange App - Frankfurter API",
+    "description": "Requisições usadas para investigar a API Frankfurter (v1) antes da integração com o React. Variável baseUrl = https://api.frankfurter.dev/v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://api.frankfurter.dev/v1" }
+  ],
+  "item": [
+    {
+      "name": "1. Moedas disponíveis",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/currencies",
+          "host": ["{{baseUrl}}"],
+          "path": ["currencies"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Retorna objeto código -> nome', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.be.an('object');",
+              "  pm.expect(body).to.have.property('EUR');",
+              "  pm.expect(body).to.have.property('USD');",
+              "  pm.expect(body).to.have.property('BRL');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Cotação mais recente EUR → USD",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/latest?base=EUR&symbols=USD",
+          "host": ["{{baseUrl}}"],
+          "path": ["latest"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "USD" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Estrutura esperada', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.base).to.eql('EUR');",
+              "  pm.expect(body.date).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+              "  pm.expect(body.rates.USD).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Cotação mais recente USD → BRL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/latest?base=USD&symbols=BRL",
+          "host": ["{{baseUrl}}"],
+          "path": ["latest"],
+          "query": [
+            { "key": "base", "value": "USD" },
+            { "key": "symbols", "value": "BRL" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Possui taxa BRL', () => pm.expect(pm.response.json().rates.BRL).to.be.a('number'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Histórico por intervalo EUR → USD",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/2026-01-01..2026-01-31?base=EUR&symbols=USD",
+          "host": ["{{baseUrl}}"],
+          "path": ["2026-01-01..2026-01-31"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "USD" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('rates é um objeto indexado por data', () => {",
+              "  const body = pm.response.json();",
+              "  const dates = Object.keys(body.rates);",
+              "  pm.expect(dates.length).to.be.above(0);",
+              "  pm.expect(dates[0]).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+              "  pm.expect(body.rates[dates[0]].USD).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Histórico até hoje (intervalo aberto)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/2026-10-01..?base=EUR&symbols=USD",
+          "host": ["{{baseUrl}}"],
+          "path": ["2026-10-01.."],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "USD" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Histórico de 10 anos (investigar granularidade)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/2016-10-25..2026-10-25?base=EUR&symbols=USD",
+          "host": ["{{baseUrl}}"],
+          "path": ["2016-10-25..2026-10-25"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "USD" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Registra a quantidade de pontos retornados', () => {",
+              "  const total = Object.keys(pm.response.json().rates).length;",
+              "  console.log('Pontos retornados em 10 anos:', total);",
+              "  pm.expect(total).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Data específica em fim de semana",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/2026-10-24?base=EUR&symbols=USD",
+          "host": ["{{baseUrl}}"],
+          "path": ["2026-10-24"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "USD" }
+          ]
+        },
+        "description": "24/10/2026 é sábado. Observe qual 'date' a API devolve (esperado: último dia útil anterior)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Registra a data efetiva', () => console.log('Data efetiva:', pm.response.json().date));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Erro - moeda inexistente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/latest?base=EUR&symbols=XXX",
+          "host": ["{{baseUrl}}"],
+          "path": ["latest"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "XXX" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Retorna erro (4xx)', () => pm.expect(pm.response.code).to.be.within(400, 499));",
+              "console.log('Resposta de erro:', pm.response.text());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Erro - base igual ao destino",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/latest?base=EUR&symbols=EUR",
+          "host": ["{{baseUrl}}"],
+          "path": ["latest"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "EUR" }
+          ]
+        },
+        "description": "Investiga o que a API devolve quando origem = destino. A aplicação bloqueia este caso antes de consultar (RN03)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "console.log('Status:', pm.response.code, '| Corpo:', pm.response.text());"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Erro - data inválida",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/2026-13-45?base=EUR&symbols=USD",
+          "host": ["{{baseUrl}}"],
+          "path": ["2026-13-45"],
+          "query": [
+            { "key": "base", "value": "EUR" },
+            { "key": "symbols", "value": "USD" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Retorna erro (4xx)', () => pm.expect(pm.response.code).to.be.within(400, 499));",
+              "console.log('Resposta de erro:', pm.response.text());"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
