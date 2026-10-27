@@ -11,16 +11,16 @@
 
 | # | Requisição | Esperado (documentação) | Resultado obtido | Evidência |
 | --- | --- | --- | --- | --- |
-| 1 | `GET /currencies` | 200; objeto `{ "EUR": "Euro", ... }` | _preencher_ | `docs/images/postman-01.png` |
-| 2 | `GET /latest?base=EUR&symbols=USD` | 200; `{ amount, base, date, rates: { USD } }` | _preencher_ | `docs/images/postman-02.png` |
-| 3 | `GET /latest?base=USD&symbols=BRL` | 200; taxa BRL | _preencher_ | `docs/images/postman-03.png` |
-| 4 | `GET /2026-01-01..2026-01-31?base=EUR&symbols=USD` | 200; `rates` indexado por data | _preencher_ | `docs/images/postman-04.png` |
-| 5 | `GET /2026-10-01..?base=EUR&symbols=USD` | 200; série até a data mais recente | _preencher_ | `docs/images/postman-05.png` |
-| 6 | `GET /2016-10-25..2026-10-25?...` (10 anos) | 200; **anotar quantos pontos retornam** | _preencher_ | `docs/images/postman-06.png` |
-| 7 | `GET /2026-10-24?...` (sábado) | 200; `date` do último dia útil anterior | _preencher_ | `docs/images/postman-07.png` |
-| 8 | `GET /latest?base=EUR&symbols=XXX` | 4xx com mensagem de erro | _preencher_ | `docs/images/postman-08.png` |
-| 9 | `GET /latest?base=EUR&symbols=EUR` | investigar (a app bloqueia este caso) | _preencher_ | `docs/images/postman-09.png` |
-| 10 | `GET /2026-13-45?...` | 4xx | _preencher_ | `docs/images/postman-10.png` |
+| 1 | `GET /currencies` | 200; objeto código → nome | 200 OK. Lista de moedas, incluindo BRL, EUR e USD. Testes 2/2. | ![print](images/postman-01.png) |
+| 2 | `GET /latest?base=EUR&symbols=USD` | 200; `{ amount, base, date, rates }` | 200 OK. `date: 2026-10-27`, `USD: 1.115`. Testes 2/2. | ![print](images/postman-02.png) |
+| 3 | `GET /latest?base=USD&symbols=BRL` | 200; taxa BRL | 200 OK. `date: 2026-10-27`, `BRL: 5.3474`. Testes 2/2. | ![print](images/postman-03.png) |
+| 4 | `GET /2026-01-01..2026-01-31?base=EUR&symbols=USD` | 200; `rates` indexado por data | 200 OK. Veio `start_date: 2025-12-31` e `end_date: 2026-01-30`. Testes 2/2. | ![print](images/postman-04.png) |
+| 5 | `GET /2026-10-01..?base=EUR&symbols=USD` | 200; série até a data mais recente | 200 OK. De 2026-10-01 a 2026-10-27, sem sábados e domingos. Testes 1/1. | ![print](images/postman-05.png) |
+| 6 | `GET /2016-10-25..2026-10-25?...` (10 anos) | 200; anotar quantos pontos retornam | 200 OK, 880 ms, 12,24 KB. `start_date: 2016-10-25`, `end_date: 2026-10-23`. Pontos retornados: **X**. Testes 2/2. | ![print](images/postman-06.png) |
+| 7 | `GET /2026-10-24?...` (sábado) | 200; `date` do último dia útil anterior | 200 OK. Pedi sábado 24/10 e veio `date: 2026-10-23`, `USD: 1.1193`. Testes 2/2. | ![print](images/postman-07.png) |
+| 8 | `GET /latest?base=EUR&symbols=XXX` | 4xx com mensagem | 404 Not Found. `{"message": "not found"}`. Testes 1/1. | ![print](images/postman-08.png) |
+| 9 | `GET /latest?base=EUR&symbols=EUR` | investigar | 422 Unprocessable Entity. `{"message": "bad currency pair"}`. | ![print](images/postman-09.png) |
+| 10 | `GET /2026-13-45?...` | 4xx | 422 Unprocessable Entity. `{"message": "invalid date"}`. | ![print](images/postman-10.png) |
 
 ## Estrutura do JSON
 
@@ -65,10 +65,11 @@
 
 Preencha após testar:
 
-- **Fins de semana e feriados:** _o que a API devolveu na requisição 7?_ A aplicação não preenche dias sem cotação (RN07).
-- **Granularidade em períodos longos:** _quantos pontos vieram na requisição 6?_ Se a API agrupar dados em períodos longos, a tabela e o gráfico mostram exatamente o que ela devolve.
-- **Mesma moeda na origem e no destino:** _qual resposta veio na requisição 9?_ A aplicação bloqueia o caso antes de chamar a API (RN03).
-- **Formato do erro:** _copie o JSON de erro das requisições 8 e 10._ O serviço `frankfurterApi.js` lê o campo `message` quando existir.
+- **Fins de semana e feriados:** ao pedir um sábado (requisição 7), a API devolveu a cotação da sexta-feira anterior (`date: 2026-10-23`). A aplicação não preenche dias sem cotação (RN07).
+- **Início e fim de intervalo sem cotação:** na requisição 4 pedi de 01/01 (feriado) a 31/01 (sábado) e a API devolveu de 31/12 a 30/01. Aparentemente o primeiro registro pode ser o dia útil anterior ao início pedido. Na aplicação, a tabela pode mostrar um registro um dia antes do início do período.
+- **Granularidade em períodos longos:** na requisição 6 vieram X pontos para 10 anos. _(complete com o que você observou)_
+- **Mesma moeda na origem e no destino:** a API responde 422 `bad currency pair` (requisição 9). A aplicação bloqueia esse caso antes de chamar a API (RN03).
+- **Formato do erro:** a API devolve JSON com o campo `message`: 404 `not found` (moeda inexistente) e 422 `invalid date` (data inválida). O serviço `frankfurterApi.js` lê esse campo e trata erros por `response.ok`.
 - **Data efetiva:** a data retornada em `latest` pode ser anterior a hoje; por isso a interface exibe "Cotação de DD/MM/AAAA" (RN04).
 
 ## Como a aplicação usa cada endpoint
