@@ -17,6 +17,12 @@
 | Componentes React e CSS Modules | Geração do código e do estilo |
 | Collection do Postman e documentação em `docs/` | Geração inicial |
 
+## Design no pen.dev
+- Wireframe desktop: feito manualmente por mim.
+- Protótipo desktop e estados (loading, erro, ausência de dados): gerados pelo agente
+  de IA do pen.dev a partir do wireframe, com prompts que eu escrevi/adaptei, e depois
+  revisados e ajustados por mim: _(o que você corrigiu: gráfico, ícone ⇄, tabela, etc.)_.
+
 ## O que eu fiz, revisei ou alterei
 
 > _Preencher. Exemplos do que registrar:_
