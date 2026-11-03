@@ -679,7 +679,7 @@
         {
           "type": "text",
           "id": "DlMa1",
-          "x": 564,
+          "x": 562,
           "y": 826,
           "fill": "#000000",
           "content": "Data ▼",
@@ -690,7 +690,7 @@
         {
           "type": "text",
           "id": "MDJQe",
-          "x": 659,
+          "x": 657,
           "y": 826,
           "fill": "#000000",
           "content": "Origem",
@@ -701,7 +701,7 @@
         {
           "type": "text",
           "id": "TQHiK",
-          "x": 753,
+          "x": 751,
           "y": 826,
           "fill": "#000000",
           "content": "Destino",
@@ -712,7 +712,7 @@
         {
           "type": "text",
           "id": "R6cRb",
-          "x": 838,
+          "x": 836,
           "y": 826,
           "fill": "#000000",
           "content": "Cotação",
@@ -947,6 +947,17 @@
           "y": 901,
           "fill": "#000000",
           "content": "6,0810",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "l2d5m",
+          "x": 910,
+          "y": 826,
+          "fill": "#000000",
+          "content": "12 de 20 registros",
           "fontFamily": "Inter",
           "fontSize": 12,
           "fontWeight": "normal"
