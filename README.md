@@ -25,7 +25,7 @@ React 18 · Vite · JavaScript (ES Modules) · CSS Modules · Recharts · Fetch 
 ## Instalação e execução
 
 ```bash
-git clone <URL-DO-SEU-REPOSITORIO>
+git clone <https://github.com/CaueRls/currency-exchange-app.git>
 cd currency-exchange-app
 npm install
 npm run dev
@@ -82,6 +82,8 @@ Adicione prints em `docs/images/` e referencie aqui:
 ```md
 ![Desktop](docs/images/app-desktop.png)
 ![Mobile](docs/images/app-mobile.png)
+![Versão desktop](docs/images/app-desktop.png)
+![Versão mobile](docs/images/app-mobile.png)
 ```
 
 ## Fluxo Git
